@@ -68,13 +68,12 @@
         const cols = row.split(',');
         return {
           dept: cols[0]?.trim(),
-          group: cols[1].trim(),
-          queue: cols[2]?.trim(),
-          name: cols[3]?.trim(),
-          location: cols[4]?.trim(),
-          managedBy: cols[5]?.trim() || 'Department',
-          contact: cols[6]?.trim() || 'TBD',
-          tonerAlert: cols[7]?.trim() || 'Inactive'
+          queue: cols[1]?.trim(),
+          name: cols[2]?.trim(),
+          location: cols[3]?.trim(),
+          managedBy: cols[4]?.trim() || 'Department',
+          contact: cols[5]?.trim() || 'TBD',
+          tonerAlert: cols[6]?.trim() || 'Inactive'
         };
       }).filter(p => p.name);
 
