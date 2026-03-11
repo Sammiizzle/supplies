@@ -71,10 +71,10 @@
           group: cols[0]?.trim(),
           printername: cols[1]?.trim(),
           queuename: cols[2]?.trim(),
-          address: cols[3]?.trim(),
-          managedBy: cols[4]?.trim() || 'Department',
-          contact: cols[5]?.trim() || 'TBD',
-          tonerAlert: cols[6]?.trim() || 'Inactive'
+          address: cols[3,4]?.trim(),
+          managedBy: cols[5]?.trim() || 'Department',
+          contact: cols[6]?.trim() || 'TBD',
+          tonerAlert: cols[7]?.trim() || 'Inactive'
         };
       }).filter(p => p && p.printername); // Changed p.name to p.printername
 
