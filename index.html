@@ -67,6 +67,7 @@
       printerData = rows.map(row => {
         const cols = row.split(',');
         return {
+          dept: cols[0].trim(),
           group: cols[1].trim(),
           name: cols[2].trim(),
           queue: cols[3].trim(),
