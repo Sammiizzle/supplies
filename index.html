@@ -67,10 +67,10 @@
       printerData = rows.map(row => {
         const cols = row.split(',');
         return {
-          dept: cols[0].trim(),
-          name: cols[1].trim(),
-          queue: cols[2].trim(),
-          location: cols[3].trim(),
+          group: cols[0].trim(),
+          printername: cols[1].trim(),
+          queuename: cols[2].trim(),
+          address: cols[3].trim(),
           managedBy: cols[4].trim() || 'Department',
           contact: cols[5].trim() || 'TBD',
           tonerAlert: cols[6].trim() || 'Inactive'
