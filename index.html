@@ -172,20 +172,27 @@
         return;
       }
 
-      list.innerHTML = filtered.map(p => `
+     list.innerHTML = filtered.map(p => {
+        // Check if this printer belongs to CADM to show the special message
+        const isCADM = p.group.includes("CADM") || p.group.includes("Central Administration");
+        const cadmNote = isCADM ? `<div class="info-row" style="color: var(--harvard-crimson); font-weight: bold; margin-top: 5px;">
+                                      CADM Community Manager: TBD
+                                   </div>` : '';
+
+        return `
         <div class="printer-card">
           <span class="status-badge">${p.group}</span>
           <h3>${p.printername || 'Unknown Printer'}</h3>
           <div class="info-row"><b>Queue:</b> <span>${p.queuename}</span></div>
           <div class="info-row"><b>Location:</b> <span>${p.address}</span></div>
-          <hr>
+          ${cadmNote} <hr>
           <div class="contact-box">
-            <div class="info-row"><b>Managed By:</b> <span>${p.managed}</span></div>
+            <div class="info-row"><b>Managed By:</b> <span>${p.managedBy}</span></div>
             <div class="info-row"><b>Contact:</b> <span>${p.contact}</span></div>
             <div class="info-row"><b>Toner:</b> <span>${p.tonerAlert.toLowerCase().includes('active') ? '🟢 Active' : '🔴 Inactive'}</span></div>
           </div>
         </div>
-      `).join('');
+      `}).join('');
     }
 
     loadPrinterData();
