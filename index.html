@@ -114,7 +114,7 @@
 
     list.innerHTML = filtered.map(p => `
       <div class="printer-card">
-        <span class="status-badge managed-${p.managedBy.toLowerCase().replace(/\s+/g, '')}">${p.managedBy}</span>
+        <span class="status-badge managed-${p.group.toLowerCase().replace(/\s+/g, '')}">${p.group}</span>
         <h3>${p.printername}</h3>
         <div class="info-row"><b>Group:</b> ${p.group}</div>
         <div class="info-row"><b>Queue:</b> ${p.queuename}</div>
