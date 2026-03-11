@@ -66,19 +66,21 @@
 
       printerData = rows.map(row => {
         const cols = row.split(',');
+        if (cols.length < 4) return null; // Skip empty/broken rows
         return {
-          group: cols[0].trim(),
-          printername: cols[1].trim(),
-          queuename: cols[2].trim(),
-          address: cols[3].trim(),
-          managedBy: cols[4].trim() || 'Department',
-          contact: cols[5].trim() || 'TBD',
-          tonerAlert: cols[6].trim() || 'Inactive'
+          group: cols[0]?.trim(),
+          printername: cols[1]?.trim(),
+          queuename: cols[2]?.trim(),
+          address: cols[3]?.trim(),
+          managedBy: cols[4]?.trim() || 'Department',
+          contact: cols[5]?.trim() || 'TBD',
+          tonerAlert: cols[6]?.trim() || 'Inactive'
         };
-      }).filter(p => p.name);
+      }).filter(p => p && p.printername); // Changed p.name to p.printername
 
       renderPrinters();
     } catch (e) {
+      console.error(e);
       document.getElementById('printerList').innerHTML = "<p>Error loading printers.csv. Ensure the file exists in the repository.</p>";
     }
   }
@@ -90,27 +92,36 @@
   }
 
   function renderPrinters() {
-    const dept = document.getElementById('deptFilter').value;
-    const query = document.getElementById('searchInput').value.toLowerCase();
+    const selectedDept = document.getElementById('deptFilter').value;
+    const query = document.getElementById('searchInput').value.toLowerCase().trim();
     const list = document.getElementById('printerList');
 
     const filtered = printerData.filter(p => {
-      const matchesDept = (dept === "All" || p.dept === dept);
-      const matchesSearch = p.name.toLowerCase().includes(query) ||
-                            p.location.toLowerCase().includes(query) ||
-                            p.queue.toLowerCase().includes(query);
+      // Use p.group instead of p.dept
+      const matchesDept = (selectedDept === "All" || p.group === selectedDept);
+      
+      // Use printername, address, and queuename to match your map above
+      const matchesSearch = p.printername.toLowerCase().includes(query) ||
+                            p.address.toLowerCase().includes(query) ||
+                            p.queuename.toLowerCase().includes(query);
       return matchesDept && matchesSearch;
     });
 
+    if (filtered.length === 0) {
+      list.innerHTML = "<p style='grid-column: 1/-1; text-align: center;'>No printers found matching your search.</p>";
+      return;
+    }
+
     list.innerHTML = filtered.map(p => `
       <div class="printer-card">
-        <span class="status-badge managed-${p.managedBy.toLowerCase()}">${p.managedBy}</span>
-        <h3>${p.name}</h3>
-        <div class="info-row"><b>Queue:</b> ${p.queue}</div>
-        <div class="info-row"><b>Location:</b> ${p.location}</div>
+        <span class="status-badge managed-${p.managedBy.toLowerCase().replace(/\s+/g, '')}">${p.managedBy}</span>
+        <h3>${p.printername}</h3>
+        <div class="info-row"><b>Group:</b> ${p.group}</div>
+        <div class="info-row"><b>Queue:</b> ${p.queuename}</div>
+        <div class="info-row"><b>Location:</b> ${p.address}</div>
         <hr>
         <div class="info-row"><b>Supply Contact:</b> ${p.contact}</div>
-        <div class="info-row"><b>Toner Alerts:</b> ${p.tonerAlert === 'Active' ? '🟢 Active' : '🔴 Inactive'}</div>
+        <div class="info-row"><b>Toner Alerts:</b> ${p.tonerAlert.toLowerCase().includes('active') ? '🟢 Active' : '🔴 Inactive'}</div>
       </div>
     `).join('');
   }
