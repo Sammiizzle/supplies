@@ -1,60 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  
   <meta charset="UTF-8">
   <title>Crimson Print Supply Matrix</title>
   <style>
     :root { --harvard-crimson: #A51C30; --hover-red: #8c1626; }
-    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f4f4; margin: 0; }
-    .header { background: var(--harvard-crimson); color: white; padding: 20px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .container { max-width: 1100px; margin: 30px auto; padding: 20px; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f4f4; margin: 0; padding-bottom: 50px; }
+    .header { background: var(--harvard-crimson); color: white; padding: 30px 20px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .container { max-width: 1200px; margin: auto; padding: 20px; }
 
     /* Search & Filter Section */
-    .controls { display: flex; gap: 15px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
-    select, input { padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 15px; }
-    input { flex: 2; }
-    select { flex: 1; cursor: pointer; }
+    .controls { 
+      display: flex; 
+      gap: 15px; 
+      background: white; 
+      padding: 25px; 
+      border-radius: 8px; 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
+      margin-top: -30px; /* Overlap header slightly */
+      margin-bottom: 30px;
+    }
+    select, input { padding: 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 15px; outline: none; }
+    input { flex: 2; border: 1px solid #A51C30; }
+    select { flex: 1; cursor: pointer; background: #fff; }
+    input:focus { box-shadow: 0 0 5px rgba(165, 28, 48, 0.3); }
 
     /* Printer Cards */
-    #printerList { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-    .printer-card { background: white; border-left: 5px solid var(--harvard-crimson); padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: transform 0.2s; }
-    .printer-card:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    .printer-card h3 { margin-top: 0; color: #333; font-size: 18px; }
-    .status-badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; }
-    .managed-wisc { background: #e3f2fd; color: #1976d2; }
-    .managed-central { background: #f1f8e9; color: #388e3c; }
-    .managed-dept { background: #fff3e0; color: #f57c00; }
-    .info-row { margin: 8px 0; font-size: 14px; color: #555; }
-    .info-row b { color: #222; }
+    #printerList { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
+    .printer-card { 
+      background: white; 
+      border-top: 6px solid var(--harvard-crimson); 
+      padding: 20px; 
+      border-radius: 8px; 
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06); 
+      display: flex;
+      flex-direction: column;
+    }
+    .printer-card h3 { margin: 10px 0; color: #222; font-size: 1.1rem; line-height: 1.4; min-height: 3em; }
+    
+    .status-badge { 
+      align-self: flex-start;
+      padding: 4px 12px; 
+      border-radius: 15px; 
+      font-size: 11px; 
+      font-weight: bold; 
+      background: #eee;
+      color: #555;
+      margin-bottom: 10px;
+    }
+
+    .info-row { margin: 6px 0; font-size: 13.5px; color: #444; line-height: 1.5; }
+    .info-row b { color: #000; display: inline-block; width: 75px; }
+    
+    hr { border: 0; border-top: 1px solid #eee; margin: 15px 0; }
+    
+    .contact-box { background: #fafafa; padding: 10px; border-radius: 4px; border: 1px solid #f0f0f0; }
   </style>
 </head>
-  
 <body>
 
 <div class="header">
   <h1>Crimson Print Supply & Alert Matrix</h1>
-  <p>Product Management Dashboard</p>
+  <p>Fleet Management & Toner Monitoring</p>
 </div>
 
 <div class="container">
   <div class="controls">
     <select id="deptFilter" onchange="renderPrinters()">
       <option value="All">All Groups</option>
-      <option value="Central Administration (CADM)">Central Administration (CADM)</option>
-      <option value="Harvard Divinity School">Harvard Divinity School</option>
-      <option value="Harvard Graduate School of Arts and Sciences">Harvard Graduate School of Arts and Sciences</option>
-      <option value="Harvard Radcliffe Institute for Advanced Study">Harvard Radcliffe Institute for Advanced Study</option>
-      <option value="Harvard Faculty of Arts and Sciences">Harvard Faculty of Arts and Sciences</option>
-      <option value="Harvard Student Agencies">Harvard Student Agencies</option>
-      <option value="Harvard John A. Paulson School of Engineering and Applied Sciences">Harvard John A. Paulson School of Engineering and Applied Sciences</option>
-      <option value="Harvard T.H. Chan School of Public Health">Harvard T.H. Chan School of Public Health</option>
+      <option value="Central Administration (CADM)">CADM</option>
+      <option value="Harvard Divinity School">Divinity School</option>
+      <option value="Harvard Graduate School of Arts and Sciences">GSAS</option>
+      <option value="Harvard Radcliffe Institute for Advanced Study">Radcliffe Institute</option>
+      <option value="Harvard Faculty of Arts and Sciences">FAS</option>
+      <option value="Harvard Student Agencies">Student Agencies</option>
+      <option value="Harvard John A. Paulson School of Engineering and Applied Sciences">SEAS</option>
+      <option value="Harvard T.H. Chan School of Public Health">Public Health (Chan)</option>
     </select>
-    <input type="text" id="searchInput" placeholder="Search by Printer Name, Queue, or Room..." onkeyup="handleSearch(event)">
+    <input type="text" id="searchInput" placeholder="Search by Printer Name, Building, or Room..." onkeyup="handleSearch(event)">
   </div>
 
-  <div id="printerList">
-    </div>
+  <div id="printerList"></div>
 </div>
 
 <script>
@@ -64,33 +90,34 @@
     try {
       const response = await fetch('printers.csv');
       const data = await response.text();
-      const rows = data.split('\n').slice(1);
+      // Split by newline and remove empty lines
+      const rows = data.split(/\r?\n/).filter(row => row.trim() !== "");
+      const contentRows = rows.slice(1); // Skip header
 
-      printerData = rows.map(row => {
-        const cols = row.split(',');
-        if (cols.length < 4) return null; // Skip empty/broken rows
+      printerData = contentRows.map(row => {
+        // This regex handles commas inside quotes (common in addresses)
+        const cols = row.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || row.split(',');
+        
         return {
-          group: cols[0]?.trim(),
-          printername: cols[1]?.trim(),
-          queuename: cols[2]?.trim(),
-          address: cols[3,4]?.trim(),
-          managedBy: cols[5]?.trim() || 'Department',
-          contact: cols[6]?.trim() || 'TBD',
-          tonerAlert: cols[7]?.trim() || 'Inactive'
+          group: (cols[0] || "").replace(/"/g, '').trim(),
+          printername: (cols[1] || "").replace(/"/g, '').trim(),
+          queuename: (cols[2] || "").replace(/"/g, '').trim(),
+          address: (cols[3] || "").replace(/"/g, '').trim(),
+          managedBy: (cols[4] || "Department").replace(/"/g, '').trim(),
+          contact: (cols[5] || "TBD").replace(/"/g, '').trim(),
+          tonerAlert: (cols[6] || "Inactive").replace(/"/g, '').trim()
         };
-      }).filter(p => p && p.printername); // Changed p.name to p.printername
+      }).filter(p => p.printername);
 
       renderPrinters();
     } catch (e) {
-      console.error(e);
-      document.getElementById('printerList').innerHTML = "<p>Error loading printers.csv. Ensure the file exists in the repository.</p>";
+      console.error("Load Error:", e);
+      document.getElementById('printerList').innerHTML = "<p>Error loading printers.csv.</p>";
     }
   }
 
   function handleSearch(event) {
-    if (event.key === "Enter" || event.type === "keyup") {
-      renderPrinters();
-    }
+    renderPrinters();
   }
 
   function renderPrinters() {
@@ -99,10 +126,7 @@
     const list = document.getElementById('printerList');
 
     const filtered = printerData.filter(p => {
-      // Use p.group instead of p.dept
       const matchesDept = (selectedDept === "All" || p.group === selectedDept);
-      
-      // Use printername, address, and queuename to match your map above
       const matchesSearch = p.printername.toLowerCase().includes(query) ||
                             p.address.toLowerCase().includes(query) ||
                             p.queuename.toLowerCase().includes(query);
@@ -110,20 +134,24 @@
     });
 
     if (filtered.length === 0) {
-      list.innerHTML = "<p style='grid-column: 1/-1; text-align: center;'>No printers found matching your search.</p>";
+      list.innerHTML = "<p style='grid-column: 1/-1; text-align: center; padding: 50px; color: #666;'>No printers found matching your search.</p>";
       return;
     }
 
     list.innerHTML = filtered.map(p => `
       <div class="printer-card">
-        <span class="status-badge managed-${p.group.toLowerCase().replace(/\s+/g, '')}">${p.group}</span>
+        <span class="status-badge">${p.group}</span>
         <h3>${p.printername}</h3>
         <div class="info-row"><b>Queue:</b> ${p.queuename}</div>
         <div class="info-row"><b>Location:</b> ${p.address}</div>
-        <div class="info-row"><b></div>
+        
         <hr>
-        <div class="info-row"><b>Supply Contact:</b> ${p.contact}</div>
-        <div class="info-row"><b>Toner Alerts:</b> ${p.tonerAlert.toLowerCase().includes('active') ? '🟢 Active' : '🔴 Inactive'}</div>
+        
+        <div class="contact-box">
+          <div class="info-row"><b>Managed:</b> ${p.managedBy}</div>
+          <div class="info-row"><b>Contact:</b> ${p.contact}</div>
+          <div class="info-row"><b>Toner:</b> ${p.tonerAlert.toLowerCase().includes('active') ? '🟢 Active' : '🔴 Inactive'}</div>
+        </div>
       </div>
     `).join('');
   }
