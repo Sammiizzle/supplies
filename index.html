@@ -62,7 +62,7 @@
 
 <div class="header">
   <h1>Crimson Print Supply & Alert Matrix</h1>
-  <p>Product Management & Toner Monitoring</p>
+  <p>Product Management Dashboard</p>
 </div>
 
 <div class="container">
@@ -81,7 +81,8 @@
     <input type="text" id="searchInput" placeholder="Search by Printer Name, Building, or Room..." onkeyup="handleSearch(event)">
   </div>
 
-  <div id="printerList"></div>
+  <div id="printerList">
+    </div>
 </div>
 
 <script>
@@ -128,6 +129,7 @@
 
     const filtered = printerData.filter(p => {
       const matchesDept = (selectedDept === "All" || p.group === selectedDept);
+      
       const matchesSearch = p.printername.toLowerCase().includes(query) ||
                             p.address.toLowerCase().includes(query) ||
                             p.queuename.toLowerCase().includes(query);
@@ -141,7 +143,7 @@
 
     list.innerHTML = filtered.map(p => `
       <div class="printer-card">
-        <span class="status-badge">${p.group}</span>
+        <span class="status-badge managed-${p.group.toLowerCase().replace(/\s+/g, '')}">${p.group}</span>
         <h3>${p.printername}</h3>
           <div class="info-row"><b>Queue:</b> ${p.queuename}</div>
           <div class="info-row"><b>Location:</b> ${p.address}</div>
