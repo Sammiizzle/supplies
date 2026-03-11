@@ -75,6 +75,27 @@
     
     hr { border: 0; border-top: 1px solid #eee; margin: 15px 0; }
     .contact-box { background: #fafafa; padding: 12px; border-radius: 6px; border: 1px solid #eee; }
+
+    .alert-btn {
+      margin-top: 15px;
+      background: white;
+      color: var(--harvard-crimson);
+      border: 1px solid var(--harvard-crimson);
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 12px;
+      text-align: center;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: block;
+}
+
+.alert-btn:hover {
+  background: var(--harvard-crimson);
+  color: white;
+}
   </style>
 </head>
 <body>
@@ -173,26 +194,36 @@
       }
 
      list.innerHTML = filtered.map(p => {
-        // Check if this printer belongs to CADM to show the special message
-        const isCADM = p.group.includes("CADM") || p.group.includes("Central Administration");
-        const cadmNote = isCADM ? `<div class="info-row" style="color: var(--harvard-crimson); font-weight: bold; margin-top: 5px;">
-                                      CADM Community Manager: TBD
-                                   </div>` : '';
+    const isCADM = p.group.includes("CADM") || p.group.includes("Central Administration");
+    const cadmNote = isCADM ? `<div class="info-row" style="color: var(--harvard-crimson); font-weight: bold; margin-top: 5px;">
+                                  CADM Community Manager: TBD
+                               </div>` : '';
 
-        return `
-        <div class="printer-card">
-          <span class="status-badge">${p.group}</span>
-          <h3>${p.printername || 'Unknown Printer'}</h3>
-          <div class="info-row"><b>Queue:</b> <span>${p.queuename}</span></div>
-          <div class="info-row"><b>Location:</b> <span>${p.address}</span></div>
-          ${cadmNote} <hr>
-          <div class="contact-box">
-            <div class="info-row"><b>Managed By:</b> <span>${p.managedBy}</span></div>
-            <div class="info-row"><b>Contact:</b> <span>${p.contact}</span></div>
-            <div class="info-row"><b>Toner:</b> <span>${p.tonerAlert.toLowerCase().includes('active') ? '🟢 Active' : '🔴 Inactive'}</span></div>
-          </div>
-        </div>
-      `}).join('');
+    // EMAIL AUTOMATION LOGIC
+    const emailSubject = encodeURIComponent(`Low Toner Alert: ${p.printername}`);
+    const emailBody = encodeURIComponent(`Hello,\n\nThis is an automated alert for the following Crimson Print asset:\n\nPrinter: ${p.printername}\nQueue: ${p.queuename}\nLocation: ${p.address}\n\nThe toner for this device is reported as low or due for replacement per the 4-day usage cycle. Please verify and order supplies as needed.\n\nBest regards,\nCrimson Print Supply Monitor`);
+    
+    // If contact is an email, use it; otherwise, default to a general helpdesk or TBD
+    const recipient = p.contact.includes('@') ? p.contact : 'crimsonprint@harvard.edu';
+
+    return `
+    <div class="printer-card">
+      <span class="status-badge">${p.group}</span>
+      <h3>${p.printername || 'Unknown Printer'}</h3>
+      <div class="info-row"><b>Queue:</b> <span>${p.queuename}</span></div>
+      <div class="info-row"><b>Location:</b> <span>${p.address}</span></div>
+      ${cadmNote} <hr>
+      <div class="contact-box">
+        <div class="info-row"><b>Managed By:</b> <span>${p.managedBy}</span></div>
+        <div class="info-row"><b>Contact:</b> <span>${p.contact}</span></div>
+        <div class="info-row"><b>Toner:</b> <span>${p.tonerAlert.toLowerCase().includes('active') ? '🟢 Active' : '🔴 Inactive'}</span></div>
+      </div>
+      
+      <a href="mailto:${recipient}?subject=${emailSubject}&body=${emailBody}" class="alert-btn">
+        📩 NOTIFY POC FOR REPLACEMENT
+      </a>
+    </div>
+  `}).join('');
     }
 
     loadPrinterData();
