@@ -38,11 +38,15 @@
 <div class="container">
   <div class="controls">
     <select id="deptFilter" onchange="renderPrinters()">
-      <option value="All">All Departments</option>
+      <option value="All">All Groups</option>
       <option value="CADM">CADM</option>
-      <option value="FAS">FAS</option>
       <option value="HDS">HDS</option>
+      <option value="GSAS">GSAS</option>
+      <option value="RAD">RAD</option>
+      <option value="FAS">FAS</option>
+      <option value="Harvard Student Agencies">Harvard Student Agencies</option>
       <option value="SEAS">SEAS</option>
+      <option value="Harvard T.H. Chan School of Public Health">Harvard T.H. Chan School of Public Health</option>
     </select>
     <input type="text" id="searchInput" placeholder="Search by Printer Name, Queue, or Room..." onkeyup="handleSearch(event)">
   </div>
