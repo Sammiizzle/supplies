@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Crimson Print Supply Matrix</title>
+  <style>
+    :root { --harvard-crimson: #A51C30; --hover-red: #8c1626; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f4f4; margin: 0; }
+    .header { background: var(--harvard-crimson); color: white; padding: 20px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .container { max-width: 1100px; margin: 30px auto; padding: 20px; }
+
+    /* Search & Filter Section */
+    .controls { display: flex; gap: 15px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
+    select, input { padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 15px; }
+    input { flex: 2; }
+    select { flex: 1; cursor: pointer; }
+
+    /* Printer Cards */
+    #printerList { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+    .printer-card { background: white; border-left: 5px solid var(--harvard-crimson); padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: transform 0.2s; }
+    .printer-card:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .printer-card h3 { margin-top: 0; color: #333; font-size: 18px; }
+    .status-badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; }
+    .managed-wisc { background: #e3f2fd; color: #1976d2; }
+    .managed-central { background: #f1f8e9; color: #388e3c; }
+    .managed-dept { background: #fff3e0; color: #f57c00; }
+    .info-row { margin: 8px 0; font-size: 14px; color: #555; }
+    .info-row b { color: #222; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Crimson Print Supply & Alert Matrix</h1>
+  <p>Fleet Management Dashboard</p>
+</div>
+
+<div class="container">
+  <div class="controls">
+    <select id="deptFilter" onchange="renderPrinters()">
+      <option value="All">All Departments</option>
+      <option value="CADM">CADM</option>
+      <option value="FAS">FAS</option>
+      <option value="HDS">HDS</option>
+      <option value="SEAS">SEAS</option>
+    </select>
+    <input type="text" id="searchInput" placeholder="Search by Printer Name, Queue, or Room..." onkeyup="handleSearch(event)">
+  </div>
+
+  <div id="printerList">
+    </div>
+</div>
+
+<script>
+  let printerData = [];
+
+  async function loadPrinterData() {
+    try {
+      const response = await fetch('printers.csv');
+      const data = await response.text();
+      const rows = data.split('\n').slice(1);
+
+      printerData = rows.map(row => {
+        const cols = row.split(',');
+        return {
+          dept: cols[0]?.trim(),
+          queue: cols[1]?.trim(),
+          name: cols[2]?.trim(),
+          location: cols[3]?.trim(),
+          managedBy: cols[4]?.trim() || 'Department',
+          contact: cols[5]?.trim() || 'TBD',
+          tonerAlert: cols[6]?.trim() || 'Inactive'
+        };
+      }).filter(p => p.name);
+
+      renderPrinters();
+    } catch (e) {
+      document.getElementById('printerList').innerHTML = "<p>Error loading printers.csv. Ensure the file exists in the repository.</p>";
+    }
+  }
+
+  function handleSearch(event) {
+    if (event.key === "Enter" || event.type === "keyup") {
+      renderPrinters();
+    }
+  }
+
+  function renderPrinters() {
+    const dept = document.getElementById('deptFilter').value;
+    const query = document.getElementById('searchInput').value.toLowerCase();
+    const list = document.getElementById('printerList');
+
+    const filtered = printerData.filter(p => {
+      const matchesDept = (dept === "All" || p.dept === dept);
+      const matchesSearch = p.name.toLowerCase().includes(query) ||
+                            p.location.toLowerCase().includes(query) ||
+                            p.queue.toLowerCase().includes(query);
+      return matchesDept && matchesSearch;
+    });
+
+    list.innerHTML = filtered.map(p => `
+      <div class="printer-card">
+        <span class="status-badge managed-${p.managedBy.toLowerCase()}">${p.managedBy}</span>
+        <h3>${p.name}</h3>
+        <div class="info-row"><b>Queue:</b> ${p.queue}</div>
+        <div class="info-row"><b>Location:</b> ${p.location}</div>
+        <hr>
+        <div class="info-row"><b>Supply Contact:</b> ${p.contact}</div>
+        <div class="info-row"><b>Toner Alerts:</b> ${p.tonerAlert === 'Active' ? '🟢 Active' : '🔴 Inactive'}</div>
+      </div>
+    `).join('');
+  }
+
+  loadPrinterData();
+</script>
+</body>
+</html>
