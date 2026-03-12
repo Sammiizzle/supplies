@@ -191,25 +191,62 @@
           };
         }).filter(p => p.printername || p.queuename);
 
-        renderPrinters();
-      } catch (e) {
-        console.error("Load Error:", e);
-        document.getElementById('printerList').innerHTML = "<p>Error loading CSV data.</p>";
-      }
-    }
+/* Update CSS for the Flat Table */
+#printerList { background: white; border-radius: 8px; overflow-x: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 
-    function renderPrinters() {
-      const selectedDept = document.getElementById('deptFilter').value;
-      const query = document.getElementById('searchInput').value.toLowerCase().trim();
-      const list = document.getElementById('printerList');
+table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+th { background: #f8f8f8; padding: 12px; border-bottom: 2px solid var(--harvard-crimson); color: #222; }
+td { padding: 12px; border-bottom: 1px solid #eee; vertical-align: top; }
+tr:hover { background: #fafafa; }
 
-      const filtered = printerData.filter(p => {
-        const matchesDept = (selectedDept === "All" || p.group.includes(selectedDept) || selectedDept.includes(p.group));
-        const matchesSearch = p.printername.toLowerCase().includes(query) ||
-                              p.address.toLowerCase().includes(query) ||
-                              p.queuename.toLowerCase().includes(query);
+/* Hide the search/filters when printing to PDF */
+@media print {
+  .controls, .topbar, .header p, .print-btn { display: none !important; }
+  .header { padding: 10px; border-bottom: 2px solid #A51C30; }
+  body { background: white; }
+  .container { max-width: 100%; margin: 0; padding: 0; }
+}
+
+   /* Replace your renderPrinters function */
+function renderPrinters() {
+    const selectedDept = document.getElementById('deptFilter').value;
+    const query = document.getElementById('searchInput').value.toLowerCase().trim();
+    const list = document.getElementById('printerList');
+
+    const filtered = printerData.filter(p => {
+        const matchesDept = (selectedDept === "All" || p.group.includes(selectedDept));
+        const matchesSearch = p.printername.toLowerCase().includes(query) || p.address.toLowerCase().includes(query);
         return matchesDept && matchesSearch;
-      });
+    });
+
+    list.innerHTML = `
+        <button onclick="window.print()" class="print-btn" style="margin: 10px; padding: 8px 15px; cursor:pointer;">📄 Export to PDF / Print</button>
+        <table>
+            <thead>
+                <tr>
+                    <th>Group</th>
+                    <th>Printer/Queue</th>
+                    <th>Location</th>
+                    <th>Management Type</th>
+                    <th>Supply Contact</th>
+                    <th>Alert Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${filtered.map(p => `
+                    <tr>
+                        <td><b>${p.group}</b></td>
+                        <td>${p.printername}<br><small style="color:666">${p.queuename}</small></td>
+                        <td>${p.address}</td>
+                        <td>${p.managedBy}</td>
+                        <td>${p.contact}</td>
+                        <td>${p.tonerAlert.includes('Active') ? '🟢 Active' : '🔴 Inactive'}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+  }
 
       if (filtered.length === 0) {
         list.innerHTML = "<p style='grid-column: 1/-1; text-align: center; padding: 50px; color: #666;'>No results found.</p>";
