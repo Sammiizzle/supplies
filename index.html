@@ -229,7 +229,7 @@
     // If contact is an email, use it; otherwise, default to a general helpdesk or TBD
     const recipient = p.contact.includes('@') ? p.contact : 'crimsonprint@harvard.edu';
 
-  return `
+    return `
     <div class="printer-card">
       <span class="status-badge">${p.group}</span>
       <h3>${p.printername || 'Unknown Printer'}</h3>
@@ -237,7 +237,7 @@
       <div class="info-row"><b>Location:</b> <span>${p.address}</span></div>
       ${cadmNote} <hr>
       <div class="contact-box">
-        <div class="info-row"><b>Support:</b> <span>${p.managedBy}</span></div>
+        <div class="info-row"><b>Managed By:</b> <span>${p.managedBy}</span></div>
         <div class="info-row"><b>Contact:</b> <span>${p.contact}</span></div>
         <div class="info-row"><b>Toner:</b> <span>${p.tonerAlert.toLowerCase().includes('active') ? '🟢 Active' : '🔴 Inactive'}</span></div>
       </div>
@@ -246,7 +246,6 @@
         📩 NOTIFY POC FOR REPLACEMENT
       </a>
     </div>
-  `
   `}).join('');
     }
     
